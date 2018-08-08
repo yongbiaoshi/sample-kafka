@@ -1,0 +1,58 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: sample-kafka
+  pid:
+    file: ${spring.application.name}.pid
+    fail-on-write-error: true
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+    favicon:
+      enabled: true
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /**
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    converters:
+      preferred-json-mapper: jackson
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  resources:
+    add-mappings: true
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+  kafka:
+    bootstrap-servers: 192.168.1.242:9092,192.168.1.242:9093,192.168.1.242:9094
+    producer:
+      acks: all
+      retries: 3
+
+logging:
+  config: ${spring.config.location:classpath:config}/logback.xml
+#swagger config
+swagger:
+  enabled: true
+  title: 代码示例
+  description: Kafka-代码示例
+  version: 0.0.1
+  contact:
+    name: shiyongbiao
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - env
+        - health
+        - info
+        - configprops
+        - mappings
+        - scheduledtasks
+        - beans

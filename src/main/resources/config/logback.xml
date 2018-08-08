@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <property name="APP_Name" value="sample-kafka"/>
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+    <contextName>${APP_Name}</contextName>
+    <property name="charset" value="UTF-8"/>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- %X{paramName} 用来获取MDC中的内容 -->
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%5level] [%X{reqSeq}]-[%X{uri}]-[%X{duration}] %-4relative [%thread] --- %-40logger{36} %line: %msg%n</pattern>
+            <charset>${charset}</charset>
+        </encoder>
+    </appender>
+    <appender name="STDOUT-JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder charset="${charset}" class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appname":"${APP_Name}"}</customFields>
+            <includeCallerData>true</includeCallerData>
+            <timestampPattern>yyyy-MM-dd HH:mm:ss.SSS</timestampPattern>
+            <fieldNames>
+                <timestamp>time</timestamp>
+                <level>level</level>
+                <thread>thread</thread>
+                <logger>logger</logger>
+                <message>detail</message>
+                <version>version</version>
+                <callerLine>line</callerLine>
+                <callerMethod>method</callerMethod>
+            </fieldNames>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/data/app/${APP_Name}/logs/${APP_Name}.logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- <fileNamePattern>D:/logs/${APP_Name}/${APP_Name}.logFile.%d{yyyy-MM-dd}.log</fileNamePattern> -->
+            <fileNamePattern>/data/app/${APP_Name}/logs/${APP_Name}.logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%5level] %-4relative [%thread] --- %-40logger{36} %line: %msg%n</pattern>
+            <charset>${charset}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.incar" level="INFO"/>
+    <logger name="*.RequestLoggingFilter" level="DEBUG"/>
+    <!--</logger>-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <!--<appender-ref ref="STDOUT-JSON" />-->
+        <!--<appender-ref ref="FILE"/>-->
+    </root>
+</configuration>  
